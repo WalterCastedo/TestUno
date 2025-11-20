@@ -107,49 +107,43 @@
 }
 
 /* Ajuste responsive para móviles */
+/* Ajuste responsive total para móviles */
 @media (max-width: 500px) {
-  .logo {
-    max-width: 100px;
-  }
-}
-
-      /* Estilo responsive total para móviles */
-      @media (max-width: 500px) {
-        h1,
-        h2 {
-          font-size: 1.4rem;
-        }
-         body {
-    padding: 8px; /* menos padding para usar más ancho */
+  body {
+    padding: 0; /* quitar padding para que las tarjetas ocupen todo el ancho */
   }
 
-       .card {
-    padding: 16px;
-    width: 100%; /* antes estaba 95% */
+  .card {
+    width: 100%;       /* ocupar todo el ancho */
+    margin: 0;         /* quitar márgenes laterales */
+    border-radius: 0;  /* opcional: bordes planos para ocupar todo el ancho */
+    padding: 16px;     /* mantener padding interno */
+  }
+
+  h1, h2 {
+    font-size: 1.4rem;
+    margin: 12px 0;
+  }
+
+  .pregunta {
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  button {
+    padding: 14px 0;
+    font-size: 1rem;
     border-radius: 12px;
-    margin: 8px 0; /* menos margen arriba y abajo */
   }
-
-
-        .pregunta {
-          font-size: 1rem;
-          padding: 12px;
-        }
-
-       input[type="text"],
-input[type="number"],
-input[type="tel"],
-button {
-  width: 100%;
-  box-sizing: border-box;
 }
-
-        button {
-          padding: 14px 0;
-          font-size: 1rem;
-          border-radius: 14px;
-        }
-      }
       
     </style>
   </head>
