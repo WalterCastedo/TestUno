@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Test Vocacional — UNO</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to right, #f0f4f8, #d9e2ec);
+        color: #333;
+      }
+
+      h1,
+      h2 {
+        text-align: center;
+        color: #0d3b66;
+        margin-bottom: 12px;
+        font-size: 1.6rem;
+      }
+
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        margin: 12px auto;
+        max-width: 480px;
+        width: 90%;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+      }
+
+      .pregunta {
+        margin: 10px 0;
+        padding: 14px;
+        background: #e9f1f7;
+        border-radius: 12px;
+        transition: background 0.2s ease;
+        font-size: 1.1rem;
+      }
+
+      .pregunta:hover {
+        background: #d0e4f7;
+      }
+
+      .pregunta input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        transform: scale(1.3);
+        margin-right: 10px;
+      }
+
+      .small {
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="tel"] {
+        width: 100%;
+        padding: 14px;
+        margin-top: 6px;
+        margin-bottom: 12px;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        box-sizing: border-box;
+        font-size: 1.05rem;
+      }
+
+      button {
+        width: 100%;
+        padding: 16px 0;
+        border: none;
+        background: #0d3b66;
+        color: white;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        font-size: 1.1rem;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background: #094172;
+      }
+
+      #preguntas {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #cargando {
+        text-align: center;
+        font-size: 1.8rem;
+        color: #0d3b66;
+      }
+      .logo {
+  max-width: 150px; /* Ajusta según tu preferencia */
+  height: auto;
+  border-radius: 12px; /* opcional, si quieres bordes redondeados */
+}
+
+/* Ajuste responsive para móviles */
+@media (max-width: 500px) {
+  .logo {
+    max-width: 100px;
+  }
+}
+
+      /* Estilo responsive total para móviles */
+      @media (max-width: 500px) {
+        h1,
+        h2 {
+          font-size: 1.4rem;
+        }
+         body {
+    padding: 8px; /* menos padding para usar más ancho */
+  }
+
+       .card {
+    padding: 16px;
+    width: 100%; /* antes estaba 95% */
+    border-radius: 12px;
+    margin: 8px 0; /* menos margen arriba y abajo */
+  }
+
+
+        .pregunta {
+          font-size: 1rem;
+          padding: 12px;
+        }
+
+       input[type="text"],
+input[type="number"],
+input[type="tel"],
+button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+        button {
+          padding: 14px 0;
+          font-size: 1rem;
+          border-radius: 14px;
+        }
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div class="card">
+  <!-- Logo de la institución -->
+  <div style="text-align: center; margin-bottom: 12px;">
+    <img src="logo.png" alt="Logo UNO" class="logo">
+  </div>
+  
+  <h1>Test Vocacional por Carreras</h1>
+  <h2 class="small">Marca solo las preguntas que apliquen para ti.</p>
+</div>
+
+    <div id="formulario" class="card">
+      <h2>Datos del Estudiante</h2>
+      <label>Nombre:</label><br />
+      <input type="text" id="nombre" required /><br /><br />
+      <label>Edad:</label><br />
+      <input type="number" id="edad" min="10" max="100" required /><br /><br />
+      <label>Colegio:</label><br />
+      <input type="text" id="colegio" required /><br /><br />
+      <label>Número de celular:</label><br />
+      <input
+        type="tel"
+        id="celular"
+        placeholder="Ej. +59171234567"
+        required
+      /><br /><br />
+      <label>Carrera deseada:</label><br />
+      <input
+        type="text"
+        id="carrera_deseada"
+        placeholder="Ej. Física, Medicina, etc."
+        required
+      /><br /><br />
+      <button onclick="iniciarTest()">Iniciar Test</button>
+    </div>
+
+    <div id="test" class="card" style="display: none">
+      <h2>Responde el Test</h2>
+      <form id="testForm">
+        <div id="preguntas"></div>
+        <br />
+        <button type="button" onclick="procesar()">
+          Finalizar y Ver Resultado
+        </button>
+      </form>
+    </div>
+
+    <div id="cargando" class="card" style="display: none">
+      <h2>⏳ Procesando tus resultados...</h2>
+      <p>Espera un momento mientras calculamos tu recomendación</p>
+    </div>
+
+    <div id="resultado" class="card" style="display: none">
+      <h2>Resultado del Test</h2>
+      <h3 id="carrera"></h3>
+      <p id="detalle" class="small"></p>
+      <br />
+      <button onclick="volver()">Volver</button>
+    </div>
+
+    <script>
+      const preguntas = [
+        "¿Te interesa entender cómo funciona el cuerpo humano?",
+        "¿Te interesa la salud bucal?",
+        "¿Te ves cuidando de los pacientes en un entorno hospitalario?",
+        "¿Te gustaría trabajar en la rehabilitación física de personas?",
+        "¿Te interesa el sistema legal y cómo se aplican las leyes?",
+        "¿Eres bueno/a con los números y la resolución de problemas matemáticos?",
+        "¿Te interesan la química y la biología?",
+        "¿Te gusta la tecnología y el mundo de la informática?",
+        "¿Te gustaría poder diagnosticar y tratar enfermedades?",
+        "¿Eres preciso/a y cuidadoso/a en tu trabajo manual?",
+        "¿Eres bueno/a en la comunicación y en hacer sentir a las personas cómodas?",
+        "¿Estás interesado/a en cómo funciona el movimiento humano?",
+        "¿Eres bueno/a en la argumentación y negociación?",
+        "¿Te ves trabajando en un entorno de oficina, manejando finanzas y cuentas?",
+        "¿Te gustaría trabajar en un laboratorio, realizando análisis y pruebas?",
+        "¿Eres bueno/a en matemáticas y lógica?",
+        "¿Te sientes cómodo/a en entornos de hospital y clínica?",
+        "¿Podrías pasar largas horas de pie trabajando?",
+        "¿Estarías dispuesto/a a trabajar en turnos de noche y fines de semana?",
+        "¿Te ves trabajando con pacientes de todas las edades, desde niños hasta ancianos?",
+        "¿Eres capaz de leer y comprender textos complejos y largos?",
+        "¿Estás dispuesto/a a seguir las normas y regulaciones financieras?",
+        "¿Eres detallista y capaz de seguir protocolos de seguridad?",
+        "¿Te ves diseñando y desarrollando software o sistemas de información?",
+      ];
+
+      const grupos = {
+        A: [0, 8, 16],
+        B: [1, 9, 17],
+        C: [2, 18, 19],
+        D: [3, 11, 17],
+        E: [4, 12, 20],
+        F: [5, 13, 21],
+        G: [6, 14, 22],
+        H: [7, 15, 23],
+      };
+
+      const carreras = {
+        A: "Medicina",
+        B: "Odontología",
+        C: "Enfermería",
+        D: "Fisioterapia y Kinesiología",
+        E: "Derecho",
+        F: "Contaduría Pública",
+        G: "Bioquímica y Farmacia",
+        H: "Ingeniería en Sistemas",
+      };
+
+      function iniciarTest() {
+  const nombre = document.getElementById("nombre").value.trim();
+  const edad = document.getElementById("edad").value.trim();
+  const colegio = document.getElementById("colegio").value.trim();
+  const celular = document.getElementById("celular").value.trim();
+  const carreraDeseada = document
+    .getElementById("carrera_deseada")
+    .value.trim();
+  if (!nombre || !edad || !colegio || !celular || !carreraDeseada) {
+    alert("Completa todos los campos obligatorios.");
+    return;
+  }
+
+  document.getElementById("formulario").style.display = "none";
+  document.getElementById("test").style.display = "block";
+
+  let html = "";
+  preguntas.forEach((p, i) => {
+    html += `<div class="pregunta">
+    <label><input type="checkbox" id="p${i}"> ${i + 1}. ${p}</label>
+  </div>`;
+  });
+  document.getElementById("preguntas").innerHTML = html;
+
+  // Ir al inicio absoluto de la página
+  setTimeout(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }, 50); // un pequeño retraso para asegurar que el contenido se renderice
+}
+
+      async function procesar() {
+        // Verificar que al menos una pregunta esté marcada
+        const anyChecked = preguntas.some(
+          (_, i) => document.getElementById("p" + i).checked
+        );
+        if (!anyChecked) {
+          alert("Debes responder al menos una pregunta.");
+          return;
+        }
+
+        document.getElementById("test").style.display = "none";
+        document.getElementById("cargando").style.display = "block";
+
+        const conteo = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 };
+        for (const g of Object.keys(grupos)) {
+          grupos[g].forEach((idx) => {
+            if (document.getElementById("p" + idx).checked) conteo[g]++;
+          });
+        }
+
+        // Ordenar por puntaje descendente
+        const sorted = Object.entries(conteo).sort((a, b) => b[1] - a[1]);
+        const maxScore = sorted[0][1];
+        // Tomar hasta 3 carreras con puntaje máximo (empates)
+        const recomendadas = sorted
+          .filter(([_, score]) => score === maxScore && score > 0)
+          .slice(0, 3)
+          .map(([k, _]) => carreras[k]);
+
+        const recomendacionArray =
+          recomendadas.length > 0 ? recomendadas : ["Sin recomendación clara"];
+
+        const data = {
+          nombre: document.getElementById("nombre").value.trim(),
+          edad: document.getElementById("edad").value.trim(),
+          colegio: document.getElementById("colegio").value.trim(),
+          celular: document.getElementById("celular").value.trim(),
+          carrera_deseada: document
+            .getElementById("carrera_deseada")
+            .value.trim(),
+          recomendacion: recomendacionArray, // << envías array en vez de string
+        };
+
+        try {
+          await fetch(
+            "https://script.google.com/macros/s/AKfycbyOw6_aisbZVK3A8j9EiZZ0AgoUAZzxfXw5AB-92DdncqGKfEJhDgGxTPfF7c0XjbLVbQ/exec",
+            {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            }
+          );
+          await new Promise((resolve) => setTimeout(resolve, 1200));
+          document.getElementById("cargando").style.display = "none";
+          document.getElementById("resultado").style.display = "block";
+          document.getElementById(
+            "carrera"
+          ).innerHTML = `Carrera(s) recomendada(s): <strong>${recomendacionArray.join(
+            " | "
+          )}</strong>`;
+          document.getElementById(
+            "detalle"
+          ).innerText = `Puntajes: ${Object.entries(conteo)
+            .map((kv) => kv.join(":"))
+            .join(" | ")}`;
+        } catch (err) {
+          console.error("Error al guardar:", err);
+          alert("⚠️ Ocurrió un error al enviar tus datos. Intenta nuevamente.");
+          document.getElementById("cargando").style.display = "none";
+          document.getElementById("test").style.display = "block";
+        }
+      }
+
+      function volver() {
+        document.getElementById("resultado").style.display = "none";
+        document.getElementById("formulario").style.display = "block";
+      }
+    </script>
+  </body>
+</html>
