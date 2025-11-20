@@ -2,6 +2,8 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
     <title>Test Vocacional — UNO</title>
     <style>
       body {
@@ -115,18 +117,25 @@
 
       /* Ajuste responsive total para móviles */
 @media (max-width: 700px) {
-   body {
-    padding: 0; /* quitar padding para que las tarjetas ocupen todo el ancho */
+    body {
+    padding: 8px; /* menos padding para aprovechar el ancho */
   }
 
   .card {
-    width: 100%;       /* ocupar todo el ancho */
-    margin: 0;         /* quitar márgenes laterales */
-    border-radius: 0;  /* opcional: bordes planos para ocupar todo el ancho */
-    padding: 12px;     /* padding interno más pequeño para caber en pantalla */
-    box-sizing: border-box; /* asegurar que padding no aumente el ancho */
+    width: 100%; /* ocupar todo el ancho */
+    margin: 8px 0;
+    padding: 16px;
   }
 
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  button {
+    font-size: 16px; /* evita zoom automático */
+      margin: 0; /* quitar márgenes laterales */
+    box-sizing: border-box; /* asegurar que padding no haga overflow */
+
+  }
   h1, h2 {
     font-size: 1.4rem;
     margin: 12px 0;
@@ -137,20 +146,7 @@
     padding: 12px;
   }
 
- input[type="text"],
-  input[type="number"],
-  input[type="tel"],
-  button {
-    width: 100%;
-    margin: 0; /* quitar márgenes laterales */
-    box-sizing: border-box; /* asegurar que padding no haga overflow */
-  }
 
-  button {
-    padding: 14px 0;
-    font-size: 1rem;
-    border-radius: 12px;
-  }
 }
     </style>
   </head>
