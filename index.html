@@ -115,7 +115,7 @@
 
       /* Ajuste responsive total para móviles */
 @media (max-width: 700px) {
-  body {
+   body {
     padding: 0; /* quitar padding para que las tarjetas ocupen todo el ancho */
   }
 
@@ -123,7 +123,8 @@
     width: 100%;       /* ocupar todo el ancho */
     margin: 0;         /* quitar márgenes laterales */
     border-radius: 0;  /* opcional: bordes planos para ocupar todo el ancho */
-    padding: 16px;     /* mantener padding interno */
+    padding: 12px;     /* padding interno más pequeño para caber en pantalla */
+    box-sizing: border-box; /* asegurar que padding no aumente el ancho */
   }
 
   h1, h2 {
@@ -136,12 +137,13 @@
     padding: 12px;
   }
 
-  input[type="text"],
+ input[type="text"],
   input[type="number"],
   input[type="tel"],
   button {
     width: 100%;
-    box-sizing: border-box;
+    margin: 0; /* quitar márgenes laterales */
+    box-sizing: border-box; /* asegurar que padding no haga overflow */
   }
 
   button {
