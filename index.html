@@ -51,7 +51,6 @@ h2{
   margin-bottom:15px;
 }
 
-/* INPUTS */
 .input-group{margin-bottom:12px;}
 
 .input-group input{
@@ -68,7 +67,6 @@ h2{
   box-shadow:0 0 0 2px rgba(13,59,102,0.1);
 }
 
-/* BOTÓN */
 button{
   width:100%;
   padding:14px;
@@ -81,7 +79,6 @@ button{
   cursor:pointer;
 }
 
-/* PREGUNTAS */
 .pregunta{
   display:flex;
   align-items:center;
@@ -112,7 +109,6 @@ button{
   background:#eef5ff;
 }
 
-/* LOADER */
 .loader{
   border:6px solid #eee;
   border-top:6px solid #0d3b66;
@@ -125,7 +121,6 @@ button{
 
 @keyframes spin{100%{transform:rotate(360deg);}}
 
-/* RESULTADO */
 .resultado-box{text-align:center;}
 
 .resultado-box h1{
@@ -150,7 +145,6 @@ button{
   font-weight:bold;
 }
 
-/* ANIMACIONES */
 @keyframes fade{
   from{opacity:0; transform:translateY(10px);}
   to{opacity:1; transform:translateY(0);}
@@ -221,13 +215,13 @@ Universidad Nacional del Oriente<br>
 <!-- RESULTADO -->
 <div id="resultado" class="card" style="display:none">
 <div class="resultado-box">
-
+<p style="margin-top:10px;">
+🎓 Universidad Nacional del Oriente - Tu futuro Comienza Hoy
+</p>
 <p id="mensaje"></p>
 <h1 id="carrera"></h1>
 
-<p style="margin-top:10px;">
-🎓 En la Universidad Nacional del Oriente convertimos tu vocación en éxito profesional
-</p>
+
 
 <p style="font-weight:bold;">
 🚀 El futuro comienza ahora
@@ -236,7 +230,9 @@ Universidad Nacional del Oriente<br>
 <div class="cta">
 📲 Da el siguiente paso:
 
-<a id="waLink" href="#">Hablar con un asesor</a>
+<a id="wa1" href="#">Hablar con Asesor 1</a>
+<a id="wa2" href="#">Hablar con Asesor 2</a>
+
 <a href="https://www.uno.edu.bo">Visitar sitio web</a>
 </div>
 
@@ -246,6 +242,8 @@ Universidad Nacional del Oriente<br>
 </div>
 
 <script>
+
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyFOe2u3UyAPf5Bo_LQhxeiOx7EfTrnoaPc7cB1fwtAzGIzBhOsC6up_B_9NeJAzIMTAg/exec"; // 🔥 PEGA AQUÍ
 
 const preguntas=[
 "¿Te interesa el cuerpo humano?",
@@ -286,11 +284,11 @@ let respuestas=[];
 
 function iniciar(){
 
-const nombre=document.getElementById("nombre").value.trim();
-const edad=document.getElementById("edad").value.trim();
-const colegio=document.getElementById("colegio").value.trim();
-const celular=document.getElementById("celular").value.trim();
-const carrera=document.getElementById("carrera_deseada").value.trim();
+const nombre=nombreInput.value.trim();
+const edad=edadInput.value.trim();
+const colegio=colegioInput.value.trim();
+const celular=celularInput.value.trim();
+const carrera=carreraInput.value.trim();
 
 if(!nombre||!edad||!colegio||!celular||!carrera){
 alert("Completa todos los campos");
@@ -349,21 +347,44 @@ if(respuestas[i]==1) conteo[g]++;
 const sorted=Object.entries(conteo).sort((a,b)=>b[1]-a[1]);
 const mejor=sorted[0][1]>0 ? carreras[sorted[0][0]] : "Sin resultado";
 
+// 🔥 DATOS
+const data={
+nombre:document.getElementById("nombre").value,
+edad:document.getElementById("edad").value,
+colegio:document.getElementById("colegio").value,
+celular:document.getElementById("celular").value,
+carrera_deseada:document.getElementById("carrera_deseada").value,
+resultado:mejor
+};
+
+// 🔥 ENVÍO AL SHEET
+try{
+await fetch(URL_SCRIPT,{
+method:"POST",
+body:JSON.stringify(data)
+});
+}catch(e){
+console.log("Error:",e);
+}
+
 await new Promise(r=>setTimeout(r,1200));
 
 document.getElementById("cargando").style.display="none";
 document.getElementById("resultado").style.display="block";
 
 document.getElementById("mensaje").innerText =
-"Hemos analizado tus respuestas y en la Universidad Nacional del Oriente identificamos que tu perfil tiene gran afinidad con:";
+"Hemos analizado tus respuestas e identificamos que tu perfil tiene gran afinidad con:";
 
 document.getElementById("carrera").innerText = mejor;
 
-/* 🔥 WHATSAPP AUTO */
-const nombre=document.getElementById("nombre").value;
-const link=`https://wa.me/59162241035?text=Hola, soy ${nombre} y realicé el test vocacional de la UNO. Me recomendaron ${mejor} y quiero más información.`;
+// WhatsApp
+const link=`https://wa.me/59162241035?text=Hola, soy ${data.nombre} y realicé el test vocacional UNO. Me recomendaron ${mejor} y quiero información.`;
+// 🔥 Links WhatsApp
+const link1 = `https://wa.me/59162241035?text=${encodeURIComponent(mensaje)}`;
+const link2 = `https://wa.me/59162241036?text=${encodeURIComponent(mensaje)}`;
 
-document.getElementById("waLink").href=link;
+document.getElementById("wa1").href = link1;
+document.getElementById("wa2").href = link2;
 
 }
 
