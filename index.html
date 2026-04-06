@@ -35,11 +35,17 @@ h1, h2 {
   padding: 14px;
   background: #e9f1f7;
   border-radius: 12px;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
 }
 
-.pregunta input {
-  transform: scale(1.2);
+.pregunta:hover {
+  background: #d0e4f7;
+}
+
+.pregunta input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  transform: scale(1.3);
   margin-right: 10px;
 }
 
@@ -49,7 +55,7 @@ input {
   margin-bottom: 12px;
   border-radius: 12px;
   border: 1px solid #ccc;
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 
 button {
@@ -68,23 +74,26 @@ button:hover {
 }
 
 .logo {
-  max-width: 120px;
+  max-width: 150px;
 }
 
-/* Resultado bonito */
 #resultado {
   text-align: center;
 }
 
-#carrera {
-  margin-top: 10px;
-  margin-bottom: 10px;
+#detalle a {
+  display: inline-block;
+  margin: 6px 4px;
+  padding: 10px 14px;
+  background: #0d3b66;
+  color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 0.95rem;
 }
 
-#detalle {
-  font-size: 1rem;
-  color: #444;
-  line-height: 1.5;
+#detalle a:hover {
+  background: #094172;
 }
 </style>
 </head>
@@ -95,8 +104,8 @@ button:hover {
   <div style="text-align:center;">
     <img src="logo.png" class="logo">
   </div>
-  <h1>Test Vocacional</h1>
-  <p style="text-align:center;">Marca las opciones que se identifiquen contigo</p>
+  <h1>Test Vocacional por Carreras</h1>
+  <h2 style="font-size:0.9rem;">Marca solo las preguntas que apliquen para ti.</h2>
 </div>
 
 <div id="formulario" class="card">
@@ -112,15 +121,16 @@ button:hover {
 <div id="test" class="card" style="display:none">
   <h2>Responde el Test</h2>
   <div id="preguntas"></div>
-  <button onclick="procesar()">Finalizar</button>
+  <button onclick="procesar()">Finalizar y Ver Resultado</button>
 </div>
 
 <div id="cargando" class="card" style="display:none">
-  <h2>⏳ Procesando...</h2>
+  <h2>⏳ Procesando tus resultados...</h2>
+  <p>Espera un momento mientras calculamos tu recomendación</p>
 </div>
 
 <div id="resultado" class="card" style="display:none">
-  <h2>Resultado</h2>
+  <h2>Resultado del Test</h2>
   <h3 id="carrera"></h3>
   <p id="detalle"></p>
   <button onclick="volver()">Volver</button>
@@ -131,20 +141,20 @@ button:hover {
 const preguntas = [
 "¿Te interesa entender cómo funciona el cuerpo humano?",
 "¿Te interesa la salud bucal?",
-"¿Te ves cuidando pacientes en un hospital?",
-"¿Te gustaría trabajar en rehabilitación física?",
-"¿Te interesa el sistema legal?",
-"¿Eres bueno con números?",
-"¿Te interesa química y biología?",
-"¿Te gusta la informática?",
-"¿Te gustaría diagnosticar enfermedades?",
-"¿Eres preciso manualmente?",
-"¿Te comunicas bien con personas?",
-"¿Te interesa el movimiento humano?",
-"¿Eres bueno argumentando?",
-"¿Te gustan las finanzas?",
-"¿Te gustaría trabajar en laboratorio?",
-"¿Te gusta desarrollar software?"
+"¿Te ves cuidando de los pacientes en un entorno hospitalario?",
+"¿Te gustaría trabajar en la rehabilitación física de personas?",
+"¿Te interesa el sistema legal y cómo se aplican las leyes?",
+"¿Eres bueno/a con los números y la resolución de problemas matemáticos?",
+"¿Te interesan la química y la biología?",
+"¿Te gusta la tecnología y el mundo de la informática?",
+"¿Te gustaría poder diagnosticar y tratar enfermedades?",
+"¿Eres preciso/a y cuidadoso/a en tu trabajo manual?",
+"¿Eres bueno/a en la comunicación y en hacer sentir a las personas cómodas?",
+"¿Estás interesado/a en cómo funciona el movimiento humano?",
+"¿Eres bueno/a en la argumentación y negociación?",
+"¿Te ves trabajando en un entorno de oficina, manejando finanzas y cuentas?",
+"¿Te gustaría trabajar en un laboratorio, realizando análisis y pruebas?",
+"¿Te ves diseñando y desarrollando software o sistemas de información?"
 ];
 
 const grupos = {
@@ -170,8 +180,16 @@ H:"Ingeniería en Sistemas"
 };
 
 function iniciarTest(){
-  const nombre = document.getElementById("nombre").value;
-  if(!nombre){ alert("Completa tus datos"); return; }
+  const nombre = document.getElementById("nombre").value.trim();
+  const edad = document.getElementById("edad").value.trim();
+  const colegio = document.getElementById("colegio").value.trim();
+  const celular = document.getElementById("celular").value.trim();
+  const carreraDeseada = document.getElementById("carrera_deseada").value.trim();
+
+  if(!nombre || !edad || !colegio || !celular || !carreraDeseada){
+    alert("Completa todos los campos.");
+    return;
+  }
 
   document.getElementById("formulario").style.display="none";
   document.getElementById("test").style.display="block";
@@ -179,15 +197,23 @@ function iniciarTest(){
   let html="";
   preguntas.forEach((p,i)=>{
     html+=`<div class="pregunta">
-    <label><input type="checkbox" id="p${i}"> ${p}</label>
+      <label><input type="checkbox" id="p${i}"> ${i+1}. ${p}</label>
     </div>`;
   });
+
   document.getElementById("preguntas").innerHTML=html;
+
+  setTimeout(()=>{
+    window.scrollTo({top:0,behavior:"smooth"});
+  },50);
 }
 
 async function procesar(){
   const anyChecked = preguntas.some((_,i)=>document.getElementById("p"+i).checked);
-  if(!anyChecked){ alert("Marca al menos una"); return; }
+  if(!anyChecked){
+    alert("Debes marcar al menos una pregunta.");
+    return;
+  }
 
   document.getElementById("test").style.display="none";
   document.getElementById("cargando").style.display="block";
@@ -203,23 +229,29 @@ async function procesar(){
   const sorted = Object.entries(conteo).sort((a,b)=>b[1]-a[1]);
   const mejor = sorted[0][1]>0 ? carreras[sorted[0][0]] : "Sin resultado claro";
 
-  await new Promise(r=>setTimeout(r,1000));
+  await new Promise(r=>setTimeout(r,1200));
 
   document.getElementById("cargando").style.display="none";
   document.getElementById("resultado").style.display="block";
 
   document.getElementById("carrera").innerHTML=`
-  🎯 Tu mejor opción es:
-  <br><br>
-  <strong style="font-size:1.6rem;color:#0d3b66;">
-  ${mejor}
-  </strong>`;
+    🎯 Tu mejor opción es:
+    <br><br>
+    <strong style="font-size:1.6rem;color:#0d3b66;">
+      ${mejor}
+    </strong>
+  `;
 
   document.getElementById("detalle").innerHTML=`
-  ✨ Este resultado refleja tus intereses principales.
-  <br><br>
-  🎓 Te recomendamos investigar más sobre esta carrera
-  y hablar con profesionales antes de decidir.
+    ✨ Según tus respuestas, esta carrera se adapta mejor a tu perfil.
+    <br><br>
+    🎓 Te invitamos a conocer más con nosotros:
+    <br><br>
+
+    <a href="https://wa.me/59162241035" target="_blank">📱 WhatsApp 62241035</a>
+    <a href="https://wa.me/59162241036" target="_blank">📱 WhatsApp 62241036</a>
+    <br>
+    <a href="https://www.uno.edu.bo" target="_blank">🌐 Visitar página web</a>
   `;
 }
 
