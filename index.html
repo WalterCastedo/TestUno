@@ -9,30 +9,39 @@
 body{
   font-family:"Segoe UI";
   margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   background:linear-gradient(135deg,#0d3b66,#1e6091);
   color:#fff;
 }
 
 .container{
+  width:100%;
   max-width:500px;
-  margin:auto;
   padding:20px;
 }
 
 .card{
   background:#fff;
   color:#333;
-  padding:20px;
+  padding:25px;
   border-radius:20px;
   margin-top:15px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+  animation:fadeIn .6s ease;
 }
 
-h1{text-align:center;color:#0d3b66;}
+h1,h2{
+  text-align:center;
+  margin-bottom:15px;
+}
 
 input{
   width:100%;
   padding:12px;
-  margin:5px 0;
+  margin:6px 0;
   border-radius:10px;
   border:1px solid #ccc;
 }
@@ -47,24 +56,37 @@ button{
   font-size:16px;
   margin-top:10px;
   cursor:pointer;
+  transition:.3s;
+}
+
+button:hover{
+  background:#144e87;
+  transform:scale(1.03);
 }
 
 /* PREGUNTAS */
 .pregunta{
+  display:flex;
+  align-items:center;
+  gap:10px;
   background:#f1f5f9;
-  padding:15px;
+  padding:12px;
   border-radius:12px;
-  margin:8px 0;
+  margin:6px 0;
   cursor:pointer;
   transition:.3s;
+}
+
+.pregunta input{
+  width:auto;
 }
 
 .pregunta.activa{
   background:#0d3b66;
   color:#fff;
-  transform:scale(1.02);
 }
 
+/* LOADER */
 .loader{
   border:6px solid #eee;
   border-top:6px solid #0d3b66;
@@ -77,12 +99,53 @@ button{
 
 @keyframes spin{100%{transform:rotate(360deg);}}
 
+/* RESULTADO */
+.resultado-box{
+  text-align:center;
+  animation:zoomIn .8s ease;
+}
+
+.resultado-box h1{
+  font-size:32px;
+  color:#0d3b66;
+  animation:pulse 1.5s infinite;
+}
+
 .cta{
-  background:#0d3b66;
+  background:linear-gradient(135deg,#0d3b66,#1e6091);
   color:#fff;
-  padding:15px;
+  padding:18px;
   border-radius:15px;
-  margin-top:10px;
+  margin-top:15px;
+}
+
+.cta a{
+  display:block;
+  margin:8px 0;
+  color:#fff;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.cta a:hover{
+  text-decoration:underline;
+}
+
+/* ANIMACIONES */
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes zoomIn{
+  from{transform:scale(0.8); opacity:0;}
+  to{transform:scale(1); opacity:1;}
+}
+
+@keyframes pulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.08);}
+  100%{transform:scale(1);}
 }
 </style>
 </head>
@@ -91,6 +154,7 @@ button{
 
 <div class="container">
 
+<!-- FORM -->
 <div id="formulario" class="card">
 <h1>Test Vocacional</h1>
 
@@ -103,6 +167,7 @@ button{
 <button onclick="iniciar()">Iniciar Test</button>
 </div>
 
+<!-- TEST -->
 <div id="test" class="card" style="display:none">
 <h2>Selecciona las que te identifican:</h2>
 <div id="preguntas"></div>
@@ -110,23 +175,28 @@ button{
 <button onclick="procesar()">Ver Resultado</button>
 </div>
 
+<!-- CARGANDO -->
 <div id="cargando" class="card" style="display:none">
 <div class="loader"></div>
-<p>Analizando...</p>
+<p style="text-align:center;">Analizando tu perfil...</p>
 </div>
 
+<!-- RESULTADO -->
 <div id="resultado" class="card" style="display:none">
-<h2>Tu mejor opción es:</h2>
-<h1 id="carrera"></h1>
+  <div class="resultado-box">
+    <h2>🚀 Tu futuro empieza hoy</h2>
+    <h1 id="carrera"></h1>
 
-<div class="cta">
-🎓 Da el siguiente paso en tu futuro:
+    <p>Hemos analizado tus respuestas y esta es tu mejor opción profesional.</p>
 
-<a href="https://wa.me/59162241035">📲 Asesor 1</a><br>
-<a href="https://wa.me/59162241036">📲 Asesor 2</a><br>
-<a href="https://www.uno.edu.bo">🌐 Web</a>
-</div>
+    <div class="cta">
+      🎓 Da el siguiente paso:
 
+      <a href="https://wa.me/59162241035">📲 Hablar con Asesor 1</a>
+      <a href="https://wa.me/59162241036">📲 Hablar con Asesor 2</a>
+      <a href="https://www.uno.edu.bo">🌐 Visitar Sitio Web</a>
+    </div>
+  </div>
 </div>
 
 </div>
@@ -176,8 +246,10 @@ document.getElementById("test").style.display="block";
 
 let html="";
 preguntas.forEach((p,i)=>{
-html+=`<div class="pregunta" onclick="toggle(${i})" id="p${i}">
-${p}
+html+=`
+<div class="pregunta" onclick="toggle(${i})" id="p${i}">
+  <input type="checkbox" id="c${i}">
+  <label>${p}</label>
 </div>`;
 });
 document.getElementById("preguntas").innerHTML=html;
@@ -185,13 +257,16 @@ document.getElementById("preguntas").innerHTML=html;
 
 function toggle(i){
 const el=document.getElementById("p"+i);
+const check=document.getElementById("c"+i);
 
 if(respuestas[i]){
-respuestas[i]=0;
-el.classList.remove("activa");
+  respuestas[i]=0;
+  check.checked=false;
+  el.classList.remove("activa");
 }else{
-respuestas[i]=1;
-el.classList.add("activa");
+  respuestas[i]=1;
+  check.checked=true;
+  el.classList.add("activa");
 }
 }
 
@@ -211,8 +286,6 @@ if(respuestas[i]==1) conteo[g]++;
 const sorted=Object.entries(conteo).sort((a,b)=>b[1]-a[1]);
 const mejor=sorted[0][1]>0 ? carreras[sorted[0][0]] : "Sin resultado";
 
-
-// 🔥 ENVÍO CORREGIDO
 try{
 await fetch("https://script.google.com/macros/s/AKfycbyFOe2u3UyAPf5Bo_LQhxeiOx7EfTrnoaPc7cB1fwtAzGIzBhOsC6up_B_9NeJAzIMTAg/exec",{
 method:"POST",
