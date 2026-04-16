@@ -357,21 +357,26 @@ async function procesar(){
     recomendacion: mejor
   };
 
-  try{
-   const formData = new URLSearchParams();
+  try {
+  const formData = new URLSearchParams();
 
-formData.append("nombre", data.nombre);
-formData.append("edad", data.edad);
-formData.append("colegio", data.colegio);
-formData.append("celular", data.celular);
-formData.append("carrera_deseada", data.carrera_deseada);
-formData.append("recomendacion", data.recomendacion);
+  formData.append("nombre", data.nombre);
+  formData.append("edad", data.edad);
+  formData.append("colegio", data.colegio);
+  formData.append("celular", data.celular);
+  formData.append("carrera_deseada", data.carrera_deseada);
+  formData.append("recomendacion", data.recomendacion);
 
-await fetch(URL_SCRIPT, {
-  method: "POST",
-  body: formData
-});
-  }catch(e){
+  const res = await fetch(URL_SCRIPT, {
+    method: "POST",
+    body: formData
+  });
+
+  const result = await res.text();
+  console.log("Apps Script:", result);
+
+
+}catch(e){
     console.log("Error:",e);
   }
 
