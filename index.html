@@ -238,7 +238,7 @@ El futuro comienza ahora
 
 <script>
 
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwhBb50F2Wcmh0--t442gjJ48CqhxwXzQKJbly6fG1xOIQQiuGFYszXWyLi7LcG9baklQ/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyS_j0CCJ1EjCxeAV5U1EzJ9P_yMt90RLxPEICiNEdL4dGOnZL89QS5UetGyMNtie7nHA/exec";
 
 const preguntas=[
 "¿Te interesa el cuerpo humano?",
@@ -358,12 +358,18 @@ async function procesar(){
   };
 
   try{
-    await fetch(URL_SCRIPT,{
-  method:"POST",
-  headers:{
-    "Content-Type":"application/json"
-  },
-  body:JSON.stringify(data)
+   const formData = new URLSearchParams();
+
+formData.append("nombre", data.nombre);
+formData.append("edad", data.edad);
+formData.append("colegio", data.colegio);
+formData.append("celular", data.celular);
+formData.append("carrera_deseada", data.carrera_deseada);
+formData.append("recomendacion", data.recomendacion);
+
+await fetch(URL_SCRIPT, {
+  method: "POST",
+  body: formData
 });
   }catch(e){
     console.log("Error:",e);
